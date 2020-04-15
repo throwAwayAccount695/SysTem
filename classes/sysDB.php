@@ -1,13 +1,33 @@
 <?php namespace SysTem;
 use Mysqli;
 
+    /**
+     * starts connection to database on creation
+     * 
+     * The main database class of the project
+     */
     class SysDB{
+        /**
+         * variable that holds the connection to the database
+         */
         public $conn;
+        /**
+         * @param constant $db_host The server name for the database
+         * @param constant $db_user The username used to login to the database
+         * @param constant $db_pwd The password used to login to the database
+         * @param constant $db_name The name of the database you want to connect to
+         */
         public function  __construct($db_host, $db_user, $db_pwd, $db_name){
             $conn = new mysqli($db_host, $db_user, $db_pwd, $db_name);
             $this->conn = $conn;
         }
-
+        /**
+         * Get a single row from a given table as either an associative array, numbered array or an object.
+         * 
+         * @param string $table_name table_name is the name of the table you want to search in.
+         * @param string $where where you want the row from, usually by id (typing WHERE is not needed).
+         * @param string $data data is what you want the data to be contained in. your choices are; OBJECT (default), ARRAY_N (numbered array) or ARRAY_A (assoc array). 
+         */
         public function get_row($table_name, $where, $data = 'OBJECT'){
             $sql = "SELECT * FROM $table_name WHERE $where";
             $result = $this->conn->query($sql);
