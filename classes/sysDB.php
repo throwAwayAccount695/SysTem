@@ -23,5 +23,25 @@ use Mysqli;
                     break;
             }
         }
+
+        /**
+         * Get a single column or mutliple column from a given table.
+         * 
+         * @param string $col_name col_name is the name of the wanted column or columns (split column names with a comma).
+         * @param string $table_name table_name is the table you want to search in.
+         */
+        public function get_col($col_name, $table_name){
+            $sql = "SELECT $col_name FROM $table_name";
+            $result = $this->conn->query($sql);
+            if(!empty($result)){
+                $data = array();
+                while($row = mysqli_fetch_assoc($result)) {
+                    $data[] = $row;
+                }
+                return $data;
+            } else {
+                return FALSE;
+            }
+        }
     }
 ?>
