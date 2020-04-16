@@ -88,7 +88,6 @@ use Mysqli;
                 }
                 return $data;
             } else {
-                throw new Exception("");
                 return FALSE;
             }
         }
