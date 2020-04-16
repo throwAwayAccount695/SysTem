@@ -10,7 +10,7 @@ use Mysqli;
         /**
          * variable that holds the connection to the database
          */
-        public $conn;
+        private $conn;
         /**
          * @param constant $db_host The server name for the database
          * @param constant $db_user The username used to login to the database
@@ -31,16 +31,20 @@ use Mysqli;
         public function get_row($table_name, $where, $data = 'OBJECT'){
             $sql = "SELECT * FROM $table_name WHERE $where";
             $result = $this->conn->query($sql);
-            switch ($data) {
-                case 'OBJECT':
-                    return $result->fetch_object();
-                    break;
-                case 'ARRAY_A':
-                    return $result->fetch_assoc();
-                    break;
-                case 'ARRAY_N':
-                    return $result->fetch_array();
-                    break;
+            if(!empty($result)){
+                switch ($data) {
+                    case 'OBJECT':
+                        return $result->fetch_object();
+                        break;
+                    case 'ARRAY_A':
+                        return $result->fetch_assoc();
+                        break;
+                    case 'ARRAY_N':
+                        return $result->fetch_array();
+                        break;
+                }
+            } else {
+                return FALSE;
             }
         }
 
@@ -55,7 +59,7 @@ use Mysqli;
             $result = $this->conn->query($sql);
             if(!empty($result)){
                 $data = array();
-                while($row = mysqli_fetch_assoc($result)) {
+                while($row = mysqli_fetch_array($result)) {
                     $data[] = $row;
                 }
                 return $data;
