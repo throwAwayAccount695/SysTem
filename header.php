@@ -6,6 +6,7 @@
     echo '<br><pre>';
     print_r($db->get_row('cars', 'id = 5', 'OBJECT'));
     echo '</pre>';
+
     echo '<br><pre>';
     print_r($db->get_results("SELECT * FROM CARS WHERE id < 10"));
     echo '</pre>';

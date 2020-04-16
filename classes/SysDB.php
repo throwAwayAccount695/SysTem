@@ -81,13 +81,19 @@ use Mysqli;
          */
         public function get_results($sql_string){
             $result = $this->conn->query($sql_string);
-            if(!empty($result)){
-                $data = array();
-                while($row = mysqli_fetch_object($result)){
-                    $data[] = $row;
+            try{
+                if(!empty($result)){
+                    $data = array();
+                    while($row = mysqli_fetch_object($result)){
+                        $data[] = $row;
+                    }
+                    return $data;
+                } else {
+                    throw new Exception("The inputted string is not valid something went wrong :(");
                 }
-                return $data;
-            } else {
+            }
+            catch(Exception $e){
+                echo 'Message ' . $e->getMessage();
                 return FALSE;
             }
         }
