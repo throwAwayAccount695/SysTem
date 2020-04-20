@@ -78,7 +78,7 @@ use Exception;
          * 
          * @param string $sql_string The function has no SQL premade, all SQL have to be given in this parameter.
          * 
-         * @return array $data is return as an numbered array of objects.
+         * @return array $data is returned as an numbered array of objects.
          */
         public function get_results($sql_string){
             $result = $this->conn->query($sql_string);
@@ -97,6 +97,26 @@ use Exception;
                 echo 'Message ' . $e->getMessage();
                 return FALSE;
             }
+        }
+
+        /**
+         * Insert data into the database.
+         * 
+         * @param string $table_name The table that the data should be inserted into.
+         * @param array $data A numbered array containing associative arrays with the data that you want inserted.
+         * 
+         * @return bool Insert will return TRUE on completion and FALSE on failure.
+         */
+        public function insert($table_name, $data){
+            for ($i = 0; $i < count($data); $i++) { 
+                $columns = implode(', ', array_keys($data[$i]));
+                $values = implode(', ', array_values($data[$i]));
+                $sql = "INSERT INTO $table_name ($columns) VALUES ($values)";
+                if($this->conn->query($sql) === FALSE){
+                    return FALSE;
+                }
+            }
+            return TRUE;
         }
     }
 ?>
