@@ -1,5 +1,6 @@
 <?php namespace SysTem;
 use Mysqli;
+use Exception;
 
     /**
      * starts connection to database on creation
@@ -89,7 +90,7 @@ use Mysqli;
                     }
                     return $data;
                 } else {
-                    throw new Exception("The inputted string is not valid something went wrong :(");
+                    throw new  Exception("The inputted string is not valid something went wrong :(");
                 }
             }
             catch(Exception $e){
