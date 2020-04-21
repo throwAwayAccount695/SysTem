@@ -110,10 +110,35 @@ use Exception;
         public function insert($table_name, $data){
             $bool_arr = array();
             for ($i = 0; $i < count($data); $i++) { 
+
+                $prepare = null;
+                $type = null;
+                $values_arr = array();
                 $columns = implode(', ', array_keys($data[$i]));
-                $values = implode(', ', array_values($data[$i]));
-                $sql = "INSERT INTO $table_name ($columns) VALUES ($values)";
-                if($this->conn->query($sql) === FALSE){
+
+                foreach ($data[$i] as $key => $value) {
+                    array_push($values_arr, $value);
+                    switch (gettype($value)) {
+                        case 'string':
+                            $type .= 's';
+                            break;
+                        case 'integer':
+                            $type .= 'i';
+                            break;
+                        case 'double':
+                            $type .= 'd';
+                            break;
+                    }
+                }
+                for($j = 0; $j < count($values_arr); $j++){
+                    if($j == count($values_arr) - 1){
+                        $prepare .= '?';
+                    } else {
+                        $prepare .= '?, ';
+                    }
+                }
+                $stmt = $this->conn->prepare("INSERT INTO $table_name ($columns) VALUES ($prepare)");
+               /* if($stmt = $this->conn->prepare("INSERT INTO $table_name ($columns) VALUES ($prepare)") === FALSE){
                     $bool_arr[$i] = "FAILURE! Row $i didn't go through something is wrong with the data!";
                     echo '<pre>';
                     print_r($bool_arr);
@@ -122,6 +147,11 @@ use Exception;
                 } else {
                     $bool_arr[$i] = "SUCCESS! Row $i went thorugh and got added to the database!";
                 }
+                NOTE :  NEEDS TO FIND A WAY TO RETURN FALSE!
+                */
+                $stmt->bind_param($type, ...$values_arr);
+                $stmt->execute();
+                $stmt->close();
             }
             return TRUE;
         }

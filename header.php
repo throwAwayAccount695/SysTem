@@ -14,11 +14,11 @@
     print_r($db->get_results("SELECT * FROM CARS WHERE id < 10"));
     echo '</pre>';
 */
-/*
-    if($db->insert('test', array(array('name' => "'value1'", 'password' => "'1234'"), array('name' => "'value1_2'", 'password' => "'4321'")))){
+
+    if($db->insert('test', array(array('name' => "value1", 'password' => "1234"), array('name' => "value1_2", 'password' => "4321")))){
         echo 'success!';
     } else {
         echo 'wrong!';
-    }*/
+    }
     // DEBUG CODE //
 ?>
