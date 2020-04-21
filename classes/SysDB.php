@@ -108,12 +108,19 @@ use Exception;
          * @return bool Insert will return TRUE on completion and FALSE on failure.
          */
         public function insert($table_name, $data){
+            $bool_arr = array();
             for ($i = 0; $i < count($data); $i++) { 
                 $columns = implode(', ', array_keys($data[$i]));
                 $values = implode(', ', array_values($data[$i]));
                 $sql = "INSERT INTO $table_name ($columns) VALUES ($values)";
                 if($this->conn->query($sql) === FALSE){
+                    $bool_arr[$i] = "FAILURE! Row $i didn't go through something is wrong with the data!";
+                    echo '<pre>';
+                    print_r($bool_arr);
+                    echo '</pre>';
                     return FALSE;
+                } else {
+                    $bool_arr[$i] = "SUCCESS! Row $i went thorugh and got added to the database!";
                 }
             }
             return TRUE;
