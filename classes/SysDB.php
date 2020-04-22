@@ -3,20 +3,20 @@ use Mysqli;
 use Exception;
 
     /**
-     * starts connection to database on creation
+     * starts connection to database on creation.
      * 
-     * The main database class of the project
+     * The main database class of the project.
      */
     class SysDB{
         /**
-         * variable that holds the connection to the database
+         * variable that holds the connection to the database.
          */
         private $conn;
         /**
-         * @param constant $db_host The server name for the database
-         * @param constant $db_user The username used to login to the database
-         * @param constant $db_pwd The password used to login to the database
-         * @param constant $db_name The name of the database you want to connect to
+         * @param constant $db_host The server name for the database.
+         * @param constant $db_user The username used to login to the database.
+         * @param constant $db_pwd The password used to login to the database.
+         * @param constant $db_name The name of the database you want to connect to.
          */
         public function  __construct($db_host, $db_user, $db_pwd, $db_name){
             $conn = new mysqli($db_host, $db_user, $db_pwd, $db_name);
@@ -74,7 +74,7 @@ use Exception;
         }
 
         /**
-         * Make a custom SQL string
+         * Make a custom SQL string.
          * 
          * @param string $sql_string The function has no SQL premade, all SQL have to be given in this parameter.
          * 
@@ -154,6 +154,79 @@ use Exception;
                 $stmt->close();
             }
             return TRUE;
+        }
+
+        /**
+         * Update a tables data in the database.
+         * 
+         * @param string $table_name The table that you want to update data in.
+         * @param array $data An associative array with the updated data.
+         * @param array $where The current colunmn and value that you want to update as An associative array. 
+         */
+        public function update($table_name, $data, $where){
+
+            $type = null;
+            $values_arr = array();
+            $set_string = '';
+            $where_string = '';
+            $i = 0;
+
+            foreach ($data as $key => $value) {
+                array_push($values_arr, $value);
+
+                if($i < count($data)){
+                    if($i < count($data) - 1){
+                        $set_string .= $key . ' = ?, ';
+                    } else{
+                        $set_string .= $key . ' = ? '; 
+                    }
+                }
+                $i++;
+
+                switch (gettype($value)) {
+                    case 'string':
+                        $type .= 's';
+                        break;
+                    case 'integer':
+                        $type .= 'i';
+                        break;
+                    case 'double':
+                        $type .= 'd';
+                        break;
+                }
+            }
+            //reset $i
+            $i = 0;
+            foreach ($where as $key => $value) {
+                array_push($values_arr, $value);
+
+                if($i < count($where)){
+                    if($i < count($where) - 1){
+                        $where_string .= $key . ' = ? AND ';
+                    } else{
+                        $where_string .= $key . ' = ?';
+                    }
+                }
+                $i++;
+                
+                switch (gettype($value)) {
+                    case 'string':
+                        $type .= 's';
+                        break;
+                    case 'integer':
+                        $type .= 'i';
+                        break;
+                    case 'double':
+                        $type .= 'd';
+                        break;
+                }
+            }
+
+            echo "UPDATE $table_name SET $set_string WHERE $where_string";
+            $stmt = $this->conn->prepare("UPDATE $table_name SET $set_string WHERE $where_string");
+            $stmt->bind_param($type, ...$values_arr);
+            $stmt->execute();
+            $stmt->close();
         }
     }
 ?>

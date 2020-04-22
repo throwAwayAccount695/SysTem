@@ -15,10 +15,7 @@
     echo '</pre>';
 */
 
-    if($db->insert('test', array(array('name' => "value1", 'password' => "1234"), array('name' => "value1_2", 'password' => "4321")))){
-        echo 'success!';
-    } else {
-        echo 'wrong!';
-    }
+    $db->update('test', array('name' => "value_2", 'password' => "4321"), array('id' => 97));
+
     // DEBUG CODE //
 ?>
