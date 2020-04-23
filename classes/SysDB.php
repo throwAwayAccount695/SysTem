@@ -118,17 +118,8 @@ use Exception;
 
                 foreach ($data[$i] as $key => $value) {
                     array_push($values_arr, $value);
-                    switch (gettype($value)) {
-                        case 'string':
-                            $type .= 's';
-                            break;
-                        case 'integer':
-                            $type .= 'i';
-                            break;
-                        case 'double':
-                            $type .= 'd';
-                            break;
-                    }
+
+                    $type .= $this->get_prepare_type($value);
                 }
                 for($j = 0; $j < count($values_arr); $j++){
                     if($j == count($values_arr) - 1){
@@ -183,17 +174,7 @@ use Exception;
                 }
                 $i++;
 
-                switch (gettype($value)) {
-                    case 'string':
-                        $type .= 's';
-                        break;
-                    case 'integer':
-                        $type .= 'i';
-                        break;
-                    case 'double':
-                        $type .= 'd';
-                        break;
-                }
+                $type .= $this->get_prepare_type($value);
             }
             //reset $i
             $i = 0;
@@ -209,24 +190,34 @@ use Exception;
                 }
                 $i++;
                 
-                switch (gettype($value)) {
-                    case 'string':
-                        $type .= 's';
-                        break;
-                    case 'integer':
-                        $type .= 'i';
-                        break;
-                    case 'double':
-                        $type .= 'd';
-                        break;
-                }
+                $type .= $this->get_prepare_type($value);
             }
-
-            echo "UPDATE $table_name SET $set_string WHERE $where_string";
+            
             $stmt = $this->conn->prepare("UPDATE $table_name SET $set_string WHERE $where_string");
             $stmt->bind_param($type, ...$values_arr);
             $stmt->execute();
             $stmt->close();
+        }
+
+
+        // - - - - - PRIVATE METHODS - - - - - //
+
+        /**
+         * Gets the type as a single letter for bind_param method.
+         * 
+         * @param mixed $value The value that you want to get first letter of that type.
+         * 
+         * @return string first letter of the value type
+         */
+        private function get_prepare_type($value){
+            switch (gettype($value)) {
+                case 'string':
+                    return 's';
+                case 'integer':
+                    return 'i';
+                case 'double':
+                    return 'd';
+            }
         }
     }
 ?>
