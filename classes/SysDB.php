@@ -26,26 +26,49 @@ use Exception;
          * Get a single row from a given table as either an associative array, numbered array or an object.
          * 
          * @param string $table_name table_name is the name of the table you want to search in.
-         * @param string $where where you want the row from, usually by id (typing WHERE is not needed).
+         * @param string $where an associative array with the key as the column name and value as the value.
          * @param string $data data is what you want the data to be contained in. your choices are; OBJECT (default), ARRAY_N (numbered array) or ARRAY_A (assoc array). 
          * 
          * @return array $result is return as one of three choosen array types.
          */
         public function get_row($table_name, $where, $data = 'OBJECT'){
-            $sql = "SELECT * FROM $table_name WHERE $where";
-            $result = $this->conn->query($sql);
-            if(!empty($result)){
-                switch ($data) {
-                    case 'OBJECT':
-                        return $result->fetch_object();
-                        break;
-                    case 'ARRAY_A':
-                        return $result->fetch_assoc();
-                        break;
-                    case 'ARRAY_N':
-                        return $result->fetch_array(MYSQLI_NUM);
-                        break;
+            $arr;
+            $i = 0;
+            $type = NULL;
+            $values_arr = array();
+            $where_string = NULL;
+            
+            foreach ($where as $key => $value) {
+                array_push($values_arr, $value);
+
+                if($i < count($where) - 1){
+                    $where_string .= $key . ' = ? AND ';
+                } else{
+                    $where_string .= $key . ' = ?';
                 }
+                $i++;
+                $type .= $this->get_prepare_type($value);
+            }
+
+            $stmt = $this->conn->prepare("SELECT * FROM $table_name  WHERE $where_string");
+            $stmt->bind_param($type, ...$values_arr);
+            $stmt->execute();
+
+            switch ($data) {
+                case 'OBJECT':
+                    $arr = $stmt->get_result()->fetch_object();
+                    break;
+                case 'ARRAY_A':
+                    $arr = $stmt->get_result()->fetch_assoc();
+                    break;
+                case 'ARRAY_N':
+                    $arr = $stmt->get_result()->fetch_array(MYSQLI_NUM);
+                    break;
+            }
+            $stmt->close();
+
+            if(!empty($arr)){
+                return $arr;
             } else {
                 return FALSE;
             }
@@ -155,7 +178,6 @@ use Exception;
          * @param array $where The current colunmn and value that you want to update as An associative array. 
          */
         public function update($table_name, $data, $where){
-
             $type = null;
             $values_arr = array();
             $set_string = '';
@@ -192,7 +214,7 @@ use Exception;
                 
                 $type .= $this->get_prepare_type($value);
             }
-            
+
             $stmt = $this->conn->prepare("UPDATE $table_name SET $set_string WHERE $where_string");
             $stmt->bind_param($type, ...$values_arr);
             $stmt->execute();
