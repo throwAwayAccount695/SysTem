@@ -222,6 +222,41 @@ use Exception;
         }
 
 
+        /**
+         * delete a row of data in the database.
+         * 
+         * @param string $table_name The table that you want to delete data in.
+         * @param array $where where you want to delete data from as An associative array. 
+         */
+        public function delete_row($table_name, $where){
+            $type = null;
+            $values_arr = array();
+            $where_string = '';
+            $i = 0;
+
+            foreach ($where as $key => $value) {
+                array_push($values_arr, $value);
+
+                if($i < count($where)){
+                    if($i < count($where) - 1){
+                        $where_string .= $key . ' = ? AND ';
+                    } else{
+                        $where_string .= $key . ' = ?';
+                    }
+                }
+                $i++;
+                
+                $type .= $this->get_prepare_type($value);
+            }
+
+            $stmt = $this->conn->prepare("DELETE FROM $table_name WHERE $where_string");
+            $stmt->bind_param($type, ...$values_arr);
+            $stmt->execute();
+            $stmt->close();
+
+            return TRUE;
+        }
+
         // - - - - - PRIVATE METHODS - - - - - //
 
         /**

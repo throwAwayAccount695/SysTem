@@ -16,6 +16,8 @@
 */
 
     //$db->update('test', array('name' => "value_2", 'password' => "4321"), array('id' => 97));
+    //$db->insert('test', array(array('name' => 'test', 'password' => '1234')));
+    $db->delete_row('test', array('id' => 14, 'password' => 1234));
 
     // DEBUG CODE //
 ?>
